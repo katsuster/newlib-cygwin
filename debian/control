@@ -1,0 +1,12 @@
+Source: riscv64-newlib
+Section: devel
+Priority: optional
+Maintainer: Katsuhiro Suzuki <katsuster@katsuster.net>
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9)
+
+Package: riscv64-newlib
+Architecture: amd64
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: C library and math library for RISC-V embedded systems
+  Newlib is a C library and math library intended for use on embedded systems.

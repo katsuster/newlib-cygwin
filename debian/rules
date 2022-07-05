@@ -1,0 +1,38 @@
+#!/usr/bin/make -f
+
+%:
+	PATH=$(PREFIX)/bin:$(PATH) \
+	    dh $@
+
+build_dir = build
+PREFIX = /opt/riscv
+
+PWD := $(shell pwd)
+PKGVER := $(shell head -1 PKGVERSION)
+
+PACKAGE = riscv64-newlib
+TARGET  = riscv64-unknown-elf
+
+DH_FLAGS = -B$(build_dir)
+
+override_dh_auto_configure:
+	dh_auto_configure $(DH_FLAGS) -- \
+	  --target=$(TARGET) \
+	  --prefix=$(PREFIX) \
+	  --enable-newlib-io-long-double \
+	  --enable-newlib-io-long-long \
+	  --enable-newlib-io-c99-formats \
+	  CFLAGS_FOR_TARGET="-O2 -mcmodel=medany" \
+	  CXXFLAGS_FOR_TARGET="-O2 -mcmodel=medany"
+
+override_dh_auto_build:
+	dh_auto_build $(DH_FLAGS) --parallel
+
+# Ignore tests
+override_dh_auto_test:
+
+override_dh_auto_install:
+	$(MAKE) -C $(build_dir) DESTDIR=$(PWD)/debian/$(PACKAGE) install
+
+override_dh_strip:
+	dh_strip -X.a -X.o
