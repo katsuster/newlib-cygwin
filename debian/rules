@@ -1,0 +1,46 @@
+#!/usr/bin/make -f
+
+%:
+	PATH=$(PREFIX)/bin:$(PATH) \
+	    dh $@
+
+BUILD_BASE = build
+PREFIX_BASE = /opt/riscv
+
+PWD := $(shell pwd)
+PKGVER := $(shell head -1 PKGVERSION)
+
+PROJ    = riscv64-newlib
+TARGET  = riscv64-unknown-elf
+
+BUILD   = $(BUILD_BASE)_$(PROJ)
+PREFIX  = $(PREFIX_BASE)
+SYSROOT = $(PREFIX_BASE)/$(TARGET)/sysroot
+DEST    = $(PWD)/debian/$(PROJ)
+DESTPRE = $(DEST)/$(PREFIX)
+DESTSYS = $(DEST)/$(SYSROOT)
+
+override_dh_auto_configure:
+	dh_auto_configure -B$(BUILD) -- \
+	  --target=$(TARGET) \
+	  --prefix=$(PREFIX) \
+	  --enable-newlib-io-long-double \
+	  --enable-newlib-io-long-long \
+	  --enable-newlib-io-c99-formats \
+	  CFLAGS_FOR_TARGET="-O2 -mcmodel=medany" \
+	  CXXFLAGS_FOR_TARGET="-O2 -mcmodel=medany"
+
+# Do not run autoreconf (it breaks existed configure)
+override_dh_autoreconf:
+
+override_dh_auto_build:
+	dh_auto_build -B$(BUILD) --parallel
+
+# Ignore tests
+override_dh_auto_test:
+
+override_dh_auto_install:
+	$(MAKE) -C $(BUILD) DESTDIR=$(DEST) install
+
+override_dh_strip:
+	dh_strip -X.a -X.o

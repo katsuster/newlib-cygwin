@@ -1,0 +1,5 @@
+riscv64-newlib (4.1.0-1) stable; urgency=medium
+
+  * newlib-4.1.0
+
+ -- Katsuhiro Suzuki <katsuster@katsuster.net>  Fri, 27 Jan 2023 00:00:00 +0000
