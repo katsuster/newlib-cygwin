@@ -1,0 +1,42 @@
+name: build newlib
+
+on:
+  push:
+    branches:
+      - main
+      - riscv-newlib-*
+env:
+  URL_PACKAGE: https://github.com/katsuster
+  VER_BINUTILS: 2.39-1
+  VER_GCC: 12.0.1-rvv-3
+  VER_NEWLIB: 4.1.0
+  DIR_SRC: .src
+  DIR_PACKAGE: .pkg
+
+jobs:
+  debian:
+    runs-on: ubuntu-20.04
+    env:
+      PKG_TARGET: ubuntu20
+      SECT: release
+    steps:
+      - name: "clone"
+        uses: actions/checkout@v3
+      - name: "prereq"
+        run: |
+          ./pkg_script/ubuntu_setup.sh
+          curl -L ${{ env.URL_PACKAGE }}/binutils-gdb/releases/download/riscv-binutils-${{ env.VER_BINUTILS }}/riscv64-binutils_${{ env.VER_BINUTILS }}_amd64.deb \
+            > riscv64-binutils.deb
+          curl -L ${{ env.URL_PACKAGE }}/riscv-gcc/releases/download/riscv-gcc-${{ env.VER_GCC }}/riscv64-gcc-stage1_${{ env.VER_GCC }}_amd64.deb \
+            > riscv64-gcc-stage1.deb
+          sudo dpkg -i riscv64-binutils.deb
+          sudo dpkg -i riscv64-gcc-stage1.deb
+      - name: "package"
+        run: |
+          PROJ=riscv64-newlib PROJ_ORG=newlib-cygwin VER=${{ env.VER_NEWLIB }} \
+            ./pkg_script/ubuntu_package.sh
+      - name: "upload"
+        uses: actions/upload-artifact@v3
+        with:
+          name: newlib.deb
+          path: pkg_${{ env.PKG_TARGET }}/riscv64-newlib*
