@@ -7,9 +7,9 @@ on:
       - riscv-newlib-*
 env:
   URL_PACKAGE: https://github.com/katsuster
-  VER_BINUTILS: 2.39-1
-  VER_GCC: 12.0.1-rvv-3
-  VER_NEWLIB: 4.1.0
+  DEB_BINUTILS: 2.40.90-1
+  DEB_GCC: 12.0.1-rvv-3
+  VER_NEWLIB: 4.3.0
   DIR_SRC: .src
   DIR_PACKAGE: .pkg
 
@@ -25,9 +25,9 @@ jobs:
       - name: "prereq"
         run: |
           ./pkg_script/ubuntu_setup.sh
-          curl -L ${{ env.URL_PACKAGE }}/binutils-gdb/releases/download/riscv-binutils-${{ env.VER_BINUTILS }}/riscv64-binutils_${{ env.VER_BINUTILS }}_amd64.deb \
+          curl -L ${{ env.URL_PACKAGE }}/binutils-gdb/releases/download/riscv-binutils-${{ env.DEB_BINUTILS }}/riscv64-binutils_${{ env.DEB_BINUTILS }}_amd64.deb \
             > riscv64-binutils.deb
-          curl -L ${{ env.URL_PACKAGE }}/riscv-gcc/releases/download/riscv-gcc-${{ env.VER_GCC }}/riscv64-gcc-stage1_${{ env.VER_GCC }}_amd64.deb \
+          curl -L ${{ env.URL_PACKAGE }}/riscv-gcc/releases/download/riscv-gcc-${{ env.DEB_GCC }}/riscv64-gcc-stage1_${{ env.DEB_GCC }}_amd64.deb \
             > riscv64-gcc-stage1.deb
           sudo dpkg -i riscv64-binutils.deb
           sudo dpkg -i riscv64-gcc-stage1.deb
